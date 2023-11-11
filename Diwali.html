@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+  <title>Happy Diwali</title>
+  <style>
+body{
+  background:black;
+  overflow:hidden;
+  margin:0;
+}
+canvas{
+  background:#000;
+}
+.diwaliText{
+    color: aliceblue;
+}
+
+.text-body{
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    width: 100%;
+}
+.red-text {
+    font-family:Pacifico;
+    color: red;
+    font-size: 100px;
+    text-align: center;
+  }
+  html, body {
+  overflow-x: hidden;
+}
+
+.share-icon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-size: 24px;
+  color: red; /* Set the color to red */
+  cursor: pointer;
+  z-index: 999;
+}
+
+.best-wishes {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 16px;
+  color: red;
+  text-align: center;
+  z-index: 999;
+}
+
+  </style>
+</head>
+<body>
+    <div class="container-fluid text-body">
+        <h1 class="red-text text-center">Happy Diwali</h1>
+    </div> 
+
+
+    <div id="playButton">
+        <canvas id="canvas"></canvas>
+          </div>
+          <div class="best-wishes">
+            <p id="bestWishesText"></p>
+          </div>
+          
+          <div class="share-icon" onclick="shareOnWhatsApp()">
+            <i class="fab fa-whatsapp"></i>
+          </div>
+          
+
+  <script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Add an event listener to a button or another interactive element
+    var playButton = document.getElementById('playButton');
+
+    if (playButton) {
+        playButton.addEventListener('click', function() {
+            loadFirecrackerSound();
+        });
+    }
+});
+
+function loadFirecrackerSound() {
+    var firecrackerSound = new Howl({
+        src: ['./firecracker.mp3'],
+        volume: 10,
+    });
+
+    firecrackerSound.load();
+    firecrackerSound.play();
+}
+
+
+
+function getParameterByName(name, url) {
+  if (!url) url = window.location.href;
+  name = name.replace(/[\[\]]/g, "\\$&");
+  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+      results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+// Get the name parameter from the URL
+var nameFromURL = getParameterByName('name');
+
+// Set the name in the "Best wishes" message
+var bestWishesText = document.getElementById('bestWishesText');
+bestWishesText.textContent = "Best wishes from " + (nameFromURL || "");
+
+
+function shareOnWhatsApp() {
+    const url = 'http://127.0.0.1:5500/Diwali.html'
+  var userName = prompt("Enter your name:");
+  var textToShare = "Best wishes from " + userName + "! Check out this awesome Diwali celebration:"; // Customize the message
+  var urlToShare = url + '?name=' + encodeURIComponent(userName);
+
+  var whatsappLink = "whatsapp://send?text=" + encodeURIComponent(textToShare + "\n" + urlToShare);
+
+  window.location.href = whatsappLink;
+}
+
+
+  
+  
+  window.addEventListener("resize", resizeCanvas, false);
+    window.addEventListener("DOMContentLoaded", onLoad, false);
+    
+    window.requestAnimationFrame = 
+        window.requestAnimationFrame       || 
+        window.webkitRequestAnimationFrame || 
+        window.mozRequestAnimationFrame    || 
+        window.oRequestAnimationFrame      || 
+        window.msRequestAnimationFrame     || 
+        function (callback) {
+            window.setTimeout(callback, 1000/60);
+        };
+    
+    var canvas, ctx, w, h, particles = [], probability = 0.04,
+        xPoint, yPoint;
+    
+    
+    
+    
+    
+    function onLoad() {
+        canvas = document.getElementById("canvas");
+        ctx = canvas.getContext("2d");
+        resizeCanvas();
+        
+        window.requestAnimationFrame(updateWorld);
+    } 
+    
+    function resizeCanvas() {
+        if (!!canvas) {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+    } 
+    
+    function updateWorld() {
+        update();
+        paint();
+        window.requestAnimationFrame(updateWorld);
+    } 
+    
+    function update() {
+        if (particles.length < 500 && Math.random() < probability) {
+            createFirework();
+        }
+        var alive = [];
+        for (var i=0; i<particles.length; i++) {
+            if (particles[i].move()) {
+                alive.push(particles[i]);
+            }
+        }
+        particles = alive;
+    } 
+    
+    function paint() {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = "rgba(0,0,0,0.2)";
+        ctx.fillRect(0, 0, w, h);
+        ctx.globalCompositeOperation = 'lighter';
+        for (var i=0; i<particles.length; i++) {
+            particles[i].draw(ctx);
+        }
+    } 
+    
+    function createFirework() {
+        xPoint = Math.random()*(w-200)+100;
+        yPoint = Math.random()*(h-200)+100;
+        var nFire = Math.random()*50+100;
+        var c = "rgb("+(~~(Math.random()*200+55))+","
+             +(~~(Math.random()*200+55))+","+(~~(Math.random()*200+55))+")";
+        for (var i=0; i<nFire; i++) {
+            var particle = new Particle();
+            particle.color = c;
+            var vy = Math.sqrt(25-particle.vx*particle.vx);
+            if (Math.abs(particle.vy) > vy) {
+                particle.vy = particle.vy>0 ? vy: -vy;
+            }
+            particles.push(particle);
+        }
+        loadFirecrackerSound();
+
+    } 
+    
+    function Particle() {
+        this.w = this.h = Math.random()*4+1;
+        
+        this.x = xPoint-this.w/2;
+        this.y = yPoint-this.h/2;
+        
+        this.vx = (Math.random()-0.5)*10;
+        this.vy = (Math.random()-0.5)*10;
+        
+        this.alpha = Math.random()*.5+.5;
+        
+        this.color;
+    } 
+    
+    Particle.prototype = {
+        gravity: 0.05,
+        move: function () {
+            this.x += this.vx;
+            this.vy += this.gravity;
+            this.y += this.vy;
+            this.alpha -= 0.01;
+            if (this.x <= -this.w || this.x >= screen.width ||
+                this.y >= screen.height ||
+                this.alpha <= 0) {
+                    return false;
+            }
+            return true;
+        },
+        draw: function (c) {
+            c.save();
+            c.beginPath();
+            
+            c.translate(this.x+this.w/2, this.y+this.h/2);
+            c.arc(0, 0, this.w, 0, Math.PI*2);
+            c.fillStyle = this.color;
+            c.globalAlpha = this.alpha;
+            
+            c.closePath();
+            c.fill();
+            c.restore();
+        }
+    }
+
+
+    
+
+    
+    
+    </script>
+</body>
+</html>
